@@ -1,6 +1,6 @@
 from config.connection import Connection
 
-class Alumno:
+"""class Alumno:
     def __init__(self, nombres, codigo_alumno, edad, correo, celular, dni, salon_id):
         self.nombres = nombres
         self.codigo_alumno = codigo_alumno
@@ -64,6 +64,61 @@ class Alumno:
             print(f'Se registro el alumno: {self.nombres} con el codigo {self.codigo_alumno}, edad: {self.edad}, correo {self.correo}, celular {self.celular}, dni {self.dni} y salon {self.salon_id}')
         except Exception as e:
             print(e)
+"""
+class Profesor:
+    def __init__(self, nombre, dni, edad, correo):
+        self.nombre = nombre
+        self.dni = dni
+        self.edad = edad
+        self.correo = correo
+        
+    def create_table(self):
+        try:
+            conn = Connection()
+            query = '''
+                CREATE TABLE IF NOT EXISTS profesor(
+                    id SERIAL PRIMARY KEY NOT NULL,
+                    nombre character varying(50) NOT NULL,
+                    dni character varying(8) NOT NULL,
+                    edad character varying(2) NOT NULL,
+                    correo character varying(50) NOT NULL,
+                );
+            '''
+            conn.execute_query(query)
+            conn.commit()
+        except Exception as e:
+            conn.rollback()
+            print(e)
 
-Jean = Alumno("Jean", 10, 25, 'a@gmail', 123456789, 12345678, 1)
-Jean.all_alumnos()
+    def all_profesores(self):
+        try:
+            conn = Connection('profesor')
+            records = conn.select([])
+            
+            for record in records:
+                print(f'ID: {record[0]}')
+                print(f'nombre: {record[1]}')
+                print(f'dni: {record[2]}')
+                print(f'edad: {record[3]}')
+                print(f'correo: {record[4]}')
+                print('=====================')
+
+        except Exception as e:
+            print(e)
+
+    def insert_profesores(self):
+        try:
+            conn = Connection('profesor')
+            conn.insert({
+                'nombre': self.nombre,
+                'dni': self.dni,
+                'edad': self.edad,
+                'correo': self.correo
+            })
+            print(f'Se registro el profesor: {self.nombre} con el dni {self.dni}, edad: {self.edad} y correo {self.correo}')
+        except Exception as e:
+            print(e)
+
+
+x = Profesor("Javier", 12345678, 30, 'b@gmail')
+x.all_profesores()

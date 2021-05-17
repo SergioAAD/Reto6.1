@@ -1,6 +1,6 @@
 from config.connection import Connection
 
-"""class Alumno:
+class Alumno:
     def __init__(self, nombres, codigo_alumno, edad, correo, celular, dni, salon_id):
         self.nombres = nombres
         self.codigo_alumno = codigo_alumno
@@ -64,7 +64,7 @@ from config.connection import Connection
             print(f'Se registro el alumno: {self.nombres} con el codigo {self.codigo_alumno}, edad: {self.edad}, correo {self.correo}, celular {self.celular}, dni {self.dni} y salon {self.salon_id}')
         except Exception as e:
             print(e)
-"""
+
 class Profesor:
     def __init__(self, nombre, dni, edad, correo):
         self.nombre = nombre
@@ -120,5 +120,5 @@ class Profesor:
             print(e)
 
 
-x = Profesor("Javier", 12345678, 30, 'b@gmail')
-x.all_profesores()
+javier = Profesor("Javier", 12345678, 30, 'b@gmail')
+javier.all_profesores()

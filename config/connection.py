@@ -17,10 +17,18 @@ class Connection:
             fields = '*'
 
         query = f'''
-            SELECT {fields} FROM {self.table_name}
+            SELECT {fields} FROM {self.table_name} ORDER BY id
         '''
         self.cursor.execute(query)
         return self.cursor.fetchall()
+
+    def count_total(self):
+        query = f'''
+            SELECT count(*) FROM {self.table_name}
+        '''
+        self.cursor.execute(query)
+        result = self.cursor.fetchone()
+        return result[0]
 
     def insert(self, data):
         list_values = ""
@@ -53,6 +61,24 @@ class Connection:
             WHERE {' AND '.join(list_where)}
         '''
         self.execute_query(query)
+        return True
+    
+    def delete(self, id_object):
+        list_where = []
+        for field_name, field_value in id_object.items():
+            if isinstance(field_value, str):
+                field_value = f"'{field_value}'"
+            list_where.append(f"{field_name}={field_value}")
+
+        query = f'''
+            DELETE FROM {self.table_name} WHERE {' AND '.join(list_where)}
+        '''
+        query_refresh = f'''
+            ALTER TABLE {self.table_name} ALTER COLUMN id SET DEFAULT {(self.count_total()) + 1}
+        '''
+        
+        self.execute_query(query)
+        self.execute_query(query_refresh)
         return True
 
     def commit(self):

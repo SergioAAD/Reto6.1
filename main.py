@@ -1,8 +1,13 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from config.connection import Connection
 from time import sleep
+from prettytable import PrettyTable
 
 class Alumno:
-    def __init__(self, nombres, codigo_alumno, edad, correo, celular, dni, salon_id):
+    def __init__(self, id="", nombres="", codigo_alumno="", edad="", correo="", celular="", dni="", salon_id=""):
+        self.id = id
         self.nombres = nombres
         self.codigo_alumno = codigo_alumno
         self.edad = edad
@@ -36,17 +41,13 @@ class Alumno:
         try:
             conn = Connection('alumnos')
             records = conn.select([])
-            
+            p = PrettyTable()
+            print("-- LISTA DE ALUMNOS --".center(80))
+            p.field_names = ["ID", "Nombres", "Código", "Edad", "Correo", "Celular", "Dni", "Salon_id"]
+
             for record in records:
-                print(f'ID: {record[0]}')
-                print(f'nombres: {record[1]}')
-                print(f'codigo_alumno: {record[2]}')
-                print(f'edad: {record[3]}')
-                print(f'correo: {record[4]}')
-                print(f'celular: {record[5]}')
-                print(f'dni: {record[6]}')
-                print(f'salon_id: {record[7]}')
-                print('=====================')
+                p.add_row([record[0], record[1], record[2], record[3], record[4], record[5], record[6], record[7]])
+            print(p)
         except Exception as e:
             print(e)
     
@@ -54,9 +55,14 @@ class Alumno:
         try:
             conn = Connection('alumnos')
             records = conn.select([])
-            
+            p = PrettyTable()
+            print("-- LISTA DE ALUMNOS --".center(80))
+            p.field_names = ["ID", "Nombres"]
+
             for record in records:
-                print(f'ID: {record[0]}, nombres: {record[1]}')
+                p.add_row([record[0], record[1]])
+            print(p)
+
         except Exception as e:
             print(e)
 
@@ -73,6 +79,34 @@ class Alumno:
                 'salon_id': self.salon_id
             })
             print(f'Se registro el alumno: {self.nombres} con el codigo {self.codigo_alumno}, edad: {self.edad}, correo {self.correo}, celular {self.celular}, dni {self.dni} y salon {self.salon_id}')
+        except Exception as e:
+            print(e)
+
+    def update_alumnos(self):
+        try:
+            conn = Connection('alumnos')
+            conn.update({
+                'id': self.id
+            }, {
+                'nombres': self.nombres,
+                'codigo_alumno': self.codigo_alumno,
+                'edad': self.edad,
+                'correo': self.correo,
+                'celular': self.celular,
+                'dni': self.dni,
+                'salon_id': self.salon_id
+            })
+            print(f'Se modifico el usuario: {self.nombres} con DNI: {self.dni}')
+        except Exception as e:
+            print(e)
+    
+    def delete_alumnos(self):
+        try:
+            conn = Connection('alumnos')
+            conn.delete({
+                'id': self.id
+            })
+            print(f'Se elimino el usuario.')
         except Exception as e:
             print(e)
 
@@ -304,9 +338,14 @@ class Cursos:
         try:
             conn = Connection('cursos')
             records = conn.select([])
-            
+            p = PrettyTable()
+            print("-- LISTA DE CURSOS --".center(80))
+            p.field_names = ["ID", "Nombre"]
+
             for record in records:
-                print(f'{record[0]}: {record[1]}')
+                p.add_row([record[0], record[1]])
+            print(p)
+
         except Exception as e:
             print(e)
 
@@ -334,12 +373,16 @@ class Periodo:
         try:
             conn = Connection('periodo')
             records = conn.select([])
-            
+            p = PrettyTable()
+            print("-- LISTA DE PERIODOS --".center(80))
+            p.field_names = ["ID", "Nombres", "Año"]
+
             for record in records:
-                print(f'{record[0]}: {record[1]} - {record[2]}')
+                p.add_row([record[0], record[1], record[2]])
+            print(p)
+
         except Exception as e:
             print(e)
-
 
 class Notas:
     def __init__(self, periodo_id, alumno_id, nota, curso_id):
@@ -386,7 +429,7 @@ class Reformatorio():
 
     def view_principal(self):
         while True:
-            print(''' !!! BIENVENIDO ATU REFORMATORIO FAVORITO !!! 
+            print(''' !!! BIENVENIDO A TU REFORMATORIO FAVORITO !!! 
             ¿Que deseas realizar?
                 1) Ver Alumnos
                 2) Ver Docentes
@@ -411,22 +454,28 @@ class Reformatorio():
                 Escoga una opción:
                 1) Crear Nuevo Alumno
                 2) Lista de Alumnos por Salón
-                3) Regresar
-                4) Salir\n
+                3) Modificar Alumno
+                4) Eliminar Alumno
+                5) Regresar
+                6) Salir\n
             ''')
             opcion = input("> ")
             if opcion == "1":
-                self.datos_alumno()
+                self.data_insert_alumno()
             elif opcion == "2":
                 # self.datos_salon()
                 Alumno.all_alumnos("Jean")
                 sleep(1)
             elif opcion == "3":
+                self.data_update_alumno()
+            elif opcion == "4":
+                self.data_delete_alumno()
+            elif opcion == "5":
                 self.view_principal()
             else:
                 self.salir()
 
-    def datos_alumno(self):
+    def data_insert_alumno(self):
         print(''' INGRESAR DATOS DEL ALUMNO:''')
         print(''' NOMBRES: ''')
         nombres = input("> ")
@@ -443,8 +492,42 @@ class Reformatorio():
         print(''' SALON: ''')
         salon_id = input("> ")
 
-        insert = Alumno(nombres, codigo_alumno, edad, correo, celular, dni, salon_id)
+        insert = Alumno('', nombres, codigo_alumno, edad, correo, celular, dni, salon_id)
         insert.insert_alumnos()
+    
+    def choose_alumno(self):
+        Alumno.list_all_alumnos("xx")
+        print('''ESCOGER ID DE ALUMNOS:''')
+
+    def data_update_alumno(self):
+        self.choose_alumno()
+        id = input("> ")
+
+        print(''' INGRESAR DATOS DEL ALUMNO:''')
+        print(''' NOMBRES: ''')
+        nombres = input("> ")
+        print(''' CODIGO: ''')
+        codigo_alumno = input("> ")
+        print(''' EDAD: ''')
+        edad = input("> ")
+        print(''' CORREO: ''')
+        correo = input("> ")
+        print(''' CELULAR: ''')
+        celular = input("> ")
+        print(''' DNI: ''')
+        dni = input("> ")
+        print(''' SALON: ''')
+        salon_id = input("> ")
+
+        update = Alumno(id, nombres, codigo_alumno, edad, correo, celular, dni, salon_id)
+        update.update_alumnos()
+
+    def data_delete_alumno(self):
+        self.choose_alumno()
+        id = input("> ")
+        
+        delete = Alumno(id)
+        delete.delete_alumnos()
 
     def datos_salon(self):
         pass
@@ -482,7 +565,7 @@ class Reformatorio():
         while True:
             try:
                 nota = float(
-                    input(f'Ingresa nota: >'))
+                    input(f'Ingresa nota: > '))
                 if (not nota or nota < 0 or nota > 20):
                     raise Exception
                 break

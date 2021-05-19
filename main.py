@@ -434,7 +434,7 @@ class Reformatorio():
                 1) Ver Alumnos
                 2) Ver Docentes
                 3) Agregar Notas
-                3) Salir\n
+                4) Salir\n
             ''')
             opcion = input("> ")
             if opcion == "1":
@@ -464,7 +464,7 @@ class Reformatorio():
                 self.data_insert_alumno()
             elif opcion == "2":
                 # self.datos_salon()
-                Alumno.all_alumnos("Jean")
+                Alumno.all_alumnos("xx")
                 sleep(1)
             elif opcion == "3":
                 self.data_update_alumno()

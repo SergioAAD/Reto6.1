@@ -606,7 +606,7 @@ class Reformatorio():
                 self.data_insert_profesor()
             elif opcion == "2":
                 # self.datos_salon()
-                #Alumno.all_profesores("xx")
+                Profesor.all_profesores("xx")
                 #sleep(1)
                 pass
             elif opcion == "3":

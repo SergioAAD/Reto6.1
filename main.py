@@ -140,14 +140,13 @@ class Profesor:
         try:
             conn = Connection('profesor')
             records = conn.select([])
-            
+            p = PrettyTable()
+            print("-- LISTA DE PROFESORES --".center(50))
+            p.field_names = ["ID", "Nombres", "Dni", "Edad", "Correo"]
+
             for record in records:
-                print(f'ID: {record[0]}')
-                print(f'nombre: {record[1]}')
-                print(f'dni: {record[2]}')
-                print(f'edad: {record[3]}')
-                print(f'correo: {record[4]}')
-                print('=====================')
+                p.add_row([record[0], record[1], record[2], record[3], record[4]])
+            print(p)
 
         except Exception as e:
             print(e)

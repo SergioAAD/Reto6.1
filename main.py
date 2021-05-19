@@ -111,7 +111,8 @@ class Alumno:
             print(e)
 
 class Profesor:
-    def __init__(self, nombre, dni, edad, correo):
+    def __init__(self,id, nombre, dni, edad, correo):
+        self.id = id
         self.nombre = nombre
         self.dni = dni
         self.edad = edad
@@ -151,6 +152,21 @@ class Profesor:
         except Exception as e:
             print(e)
 
+    def list_all_profesores(self):
+        try:
+            conn = Connection('profesor')
+            records = conn.select([])
+            p = PrettyTable()
+            print("-- LISTA DE PROFESORES --".center(80))
+            p.field_names = ["ID", "Nombres"]
+
+            for record in records:
+                p.add_row([record[0], record[1]])
+            print(p)
+
+        except Exception as e:
+            print(e)
+
     def insert_profesores(self):
         try:
             conn = Connection('profesor')
@@ -163,7 +179,32 @@ class Profesor:
             print(f'Se registro el profesor: {self.nombre} con el dni {self.dni}, edad: {self.edad} y correo {self.correo}')
         except Exception as e:
             print(e)
-
+   
+    def update_profesor(self):
+        try:
+            conn = Connection('profesor')
+            conn.update({
+                'id': self.id
+            }, {
+                'nombres': self.nombre,
+                'dni': self.dni,
+                'edad': self.edad,
+                'correo': self.correo,
+            })
+            print(f'Se modifico el usuario: {self.nombre} con DNI: {self.dni}')
+        except Exception as e:
+            print(e)
+    
+    def delete_profesores(self):
+        try:
+            conn = Connection('profesor')
+            conn.delete({
+                'id': self.id
+            })
+            print(f'Se elimino el usuario.')
+        except Exception as e:
+            print(e)
+    
 class Salon:
     def __init__(self, grado_id, seccion_id, nivel_id):
         self.grado_id = grado_id
@@ -441,7 +482,7 @@ class Reformatorio():
                 self.view_alumno()
             if opcion == "2":
                 pass
-                # self.view_profesor()
+                self.view_profesor()
             if opcion == "3":
                 self.add_notas()
                 pass
@@ -520,9 +561,9 @@ class Reformatorio():
         salon_id = input("> ")
 
         update = Alumno(id, nombres, codigo_alumno, edad, correo, celular, dni, salon_id)
-        update.update_alumnos()
+        update.update_profesor()
 
-    def data_delete_alumno(self):
+    def data_delete_alumnos(self):
         self.choose_alumno()
         id = input("> ")
         
@@ -548,6 +589,78 @@ class Reformatorio():
 
         # search = Salon(grado_id, seccion_id, nivel_id)
         # search.all_salon_xx()
+
+    def view_profesor(self):
+        while True:
+            print('''
+                Escoga una opción:
+                1) Crear Nuevo Profesor
+                2) Lista de Profesor por curso
+                3) Modificar Profesor
+                4) Eliminar Profesor
+                5) Regresar
+                6) Salir\n
+            ''')
+            opcion = input("> ")
+            if opcion == "1":
+                self.data_insert_profesor()
+            elif opcion == "2":
+                # self.datos_salon()
+                #Alumno.all_profesores("xx")
+                #sleep(1)
+                pass
+            elif opcion == "3":
+                self.data_update_profesor()
+            elif opcion == "4":
+                self.data_delete_profesor()
+            elif opcion == "5":
+                self.view_principal()
+            else:
+                self.salir()
+
+    def data_insert_profesor(self):
+        print(''' INGRESAR DATOS DEL PROFESOR:''')
+        print(''' NOMBRES: ''')
+        nombre = input("> ")
+        print(''' DNI: ''')
+        dni = input("> ")
+        print(''' EDAD: ''')
+        edad = input("> ")
+        print(''' CORREO: ''')
+        correo = input("> ")
+        
+        insert = Profesor('', nombre, dni, edad, correo)
+        insert.insert_profesores()
+    
+    def choose_profesor(self):
+        Profesor.list_all_profesores("xx")
+        print('''ESCOGER ID DEL PROFESOR:''')
+
+    def data_update_profesor(self):
+        self.choose_profesor()
+        id = input("> ")
+
+        print(''' INGRESAR DATOS DEL PROPFESOR:''')
+        print(''' NOMBRES: ''')
+        nombre = input("> ")
+        print(''' DNI: ''')
+        dni = input("> ")       
+        print(''' EDAD: ''')
+        edad = input("> ")
+        print(''' CORREO: ''')
+        correo = input("> ")
+        print(''' DNI: ''')
+        dni = input("> ")
+
+        update = Profesor(id, nombre, dni, edad, correo)
+        update.update_profesor()
+
+    def data_delete_profesor(self):
+        self.choose_profesor()
+        id = input("> ")
+        
+        delete = Profesor(id)
+        delete.delete_profesores()
 
     def add_notas(self):
         Alumno.list_all_alumnos("xx")

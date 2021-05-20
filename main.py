@@ -165,6 +165,21 @@ class Profesor:
 
         except Exception as e:
             print(e)
+    
+    def list_prof_x_curso(self):
+        try:
+            conn = Connection('profesor')
+            records = conn.select_inner()
+            p = PrettyTable()
+            print("-- PROFESORES / CURSOS --".center(40))
+            p.field_names = ["DNI", "Nombres del Profesor", "Curso"]
+
+            for record in records:
+                p.add_row([record[0], record[1], record[2]])
+            print(p)
+
+        except Exception as e:
+            print(e)
 
     def insert_profesores(self):
         try:
@@ -232,12 +247,14 @@ class Salon:
             conn = Connection('salon')
             records = conn.select([])
             
+            p = PrettyTable()
+            print("-- LISTA DE PROFESORES --".center(50))
+            p.field_names = ["ID", "Grado_id", "Seccion_id", "Salon_id"]
+
             for record in records:
-                print(f'ID: {record[0]}')
-                print(f'grado_id: {record[1]}')
-                print(f'seccion_id: {record[2]}')
-                print(f'salon_id: {record[3]}')
-                print('=====================')
+                p.add_row([record[0], record[1], record[2], record[3]])
+            print(p)
+
         except Exception as e:
             print(e)
     
@@ -356,8 +373,9 @@ class Seccion:
             print(e)
 
 class Cursos:
-    def __init__(self, id):
+    def __init__(self, id, nombre):
         self.id = id
+        self.nombre = nombre
 
     def create_table(self):
         try:
@@ -373,6 +391,16 @@ class Cursos:
         except Exception as e:
             conn.rollback()
             print(e)
+    
+    def insert_cursos(self):
+        try:
+            conn = Connection('cursos')
+            conn.insert({
+                'nombre': self.nombre
+            })
+            print(f'Se registro el cursos: {self.nombre}')
+        except Exception as e:
+            print(e)
 
     def all_cursos(self):
         try:
@@ -386,6 +414,28 @@ class Cursos:
                 p.add_row([record[0], record[1]])
             print(p)
 
+        except Exception as e:
+            print(e)
+
+    def update_cursos(self):
+        try:
+            conn = Connection('cursos')
+            conn.update({
+                'id': self.id
+            }, {
+                'nombre': self.nombre,
+            })
+            print(f'Se modifico el curso: {self.nombre}')
+        except Exception as e:
+            print(e)
+
+    def delete_cursos(self):
+        try:
+            conn = Connection('cursos')
+            conn.delete({
+                'id': self.id
+            })
+            print(f'Se elimino el curso.')
         except Exception as e:
             print(e)
 
@@ -473,8 +523,9 @@ class Reformatorio():
             ¿Que deseas realizar?
                 1) Ver Alumnos
                 2) Ver Docentes
-                3) Agregar Notas
-                4) Salir\n
+                3) Administrar Cursos
+                4) Agregar Notas
+                5) Salir\n
             ''')
             opcion = input("> ")
             if opcion == "1":
@@ -483,8 +534,9 @@ class Reformatorio():
                 pass
                 self.view_profesor()
             if opcion == "3":
+                self.view_cursos()
+            if opcion == "4":
                 self.add_notas()
-                pass
             else:
                 self.salir()
 
@@ -509,7 +561,7 @@ class Reformatorio():
             elif opcion == "3":
                 self.data_update_alumno()
             elif opcion == "4":
-                self.data_delete_alumno()
+                self.data_delete_alumnos()
             elif opcion == "5":
                 self.view_principal()
             else:
@@ -594,11 +646,12 @@ class Reformatorio():
             print('''
                 Escoga una opción:
                 1) Crear Nuevo Profesor
-                2) Lista de Profesor por curso
-                3) Modificar Profesor
-                4) Eliminar Profesor
-                5) Regresar
-                6) Salir\n
+                2) Lista de Profesores
+                3) Profesores por curso
+                4) Modificar Profesor
+                5) Eliminar Profesor
+                6) Regresar
+                7) Salir\n
             ''')
             opcion = input("> ")
             if opcion == "1":
@@ -609,10 +662,12 @@ class Reformatorio():
                 #sleep(1)
                 pass
             elif opcion == "3":
-                self.data_update_profesor()
+                Profesor.list_prof_x_curso("xx")
             elif opcion == "4":
-                self.data_delete_profesor()
+                self.data_update_profesor()
             elif opcion == "5":
+                self.data_delete_profesor()
+            elif opcion == "6":
                 self.view_principal()
             else:
                 self.salir()
@@ -686,6 +741,74 @@ class Reformatorio():
             
         insert = Notas(periodo_id, alumno_id, nota, curso_id)
         insert.insert_notas()
+
+    def view_cursos(self):
+        while True:
+            print('''
+                Escoga una opción:
+                1) Crear Nuevo
+                2) Agregar Profesores por curso
+                3) Modificar Curso
+                4) Eliminar Curso
+                5) Regresar
+                6) Salir\n
+            ''')
+            opcion = input("> ")
+            if opcion == "1":
+                self.add_cursos()
+            elif opcion == "2":
+                self.data_cursos_profesor()
+            elif opcion == "3":
+                self.data_update_cursos()
+            elif opcion == "4":
+                self.data_delete_cursos()
+            elif opcion == "5":
+                self.view_principal()
+            else:
+                self.salir()
+
+    def choose_cursos(self):
+        Cursos.all_cursos("xx")
+        print('''ESCOGER ID DEL CURSO:''')
+    
+    def choose_salon(self):
+        Salon.all_salon("xx")
+        print('''ESCOGER ID DEL SALON:''')
+
+    def add_cursos(self):
+        print(''' INGRESAR NUEVO CURSO:''')
+        nombre = input("> ")
+        
+        insert = Cursos(nombre)
+        insert.insert_cursos()    
+
+    def data_cursos_profesor(self):
+        self.choose_profesor()
+        profesor_id = input("> ")
+        self.choose_salon()
+        salon_id = input("> ")
+        self.choose_cursos()
+        curso_id = input("> ")
+
+        insert = Salon(profesor_id, salon_id, curso_id)
+        insert.insert_salon()
+
+    def data_update_cursos(self):
+        self.choose_cursos()
+        id = input("> ")
+
+        print(''' INGRESAR EL NUEVO NOMBRE DEL CURSO:''')
+        nombre = input("> ")
+
+        update = Cursos(id, nombre)
+        update.update_cursos()
+
+    def data_delete_cursos(self):
+        self.choose_cursos()
+        id = input("> ")
+        
+        delete = Cursos(id, '')
+        delete.delete_cursos()
 
     def salir(self):
         print(''' \\\ CERRADO ///''')

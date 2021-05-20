@@ -21,6 +21,15 @@ class Connection:
         '''
         self.cursor.execute(query)
         return self.cursor.fetchall()
+    
+    def select_inner(self):
+        query = f'''
+            SELECT p.dni, p.nombre as pnombre, c.nombre as cnombre FROM curso_docente cd 
+            INNER JOIN profesor p ON p.id = cd.profesor_id
+            INNER JOIN cursos c ON c.id = cd.curso_id
+        '''
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
 
     def count_total(self):
         query = f'''
